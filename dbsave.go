@@ -23,10 +23,15 @@ func init() {
 
 func LinkDBServer() error {
 	var err error
+
 	// 加载配置文件
 	cfg := mysql.NewCfg()
 	cfg.DBName = "joke"
-	fmt.Println("正在连接数据库...")
+	cfg.Address = "119.23.235.220"
+	cfg.User = "joke"
+	cfg.Pass = "jokeUser&2018"
+
+	fmt.Println("【正在连接数据库...】")
 	DBSave, err = mysql.NewDBs(
 		cfg.DBName,
 		cfg.Address,
@@ -37,9 +42,9 @@ func LinkDBServer() error {
 		cfg.MinConn,
 	)
 	if err != nil {
-		fmt.Println("连接数据库失败-", err.Error())
+		fmt.Println("【连接数据库失败-", err.Error(), "】")
 	} else {
-		fmt.Println("连接数据库成功")
+		fmt.Println("【连接数据库成功】")
 	}
 	return err
 }

@@ -38,14 +38,16 @@ func (this *ParserJokeList) ParserOnHtml(e *colly.HTMLElement) {
 }
 
 func (this *ParserJokeList) ParserOnRequest(r *colly.Request) {
-	fmt.Print(r.URL.String())
+	// fmt.Print(r.URL.String())
+	// fmt.Print("○")
+	fmt.Print("|")
 }
 
 func (this *ParserJokeList) Do(sPath string) error {
 	this.contentPaths = make([]string, 0, 20)
-	fmt.Print("开始抓取")
+	// fmt.Print("开始抓取")
 	err := this.c.Visit(sPath)
-	fmt.Println("，分析页面数据完成，抓取详细页面信息")
+	// fmt.Println("，分析页面数据完成，抓取详细页面信息")
 	if err == nil {
 		for _, jokePath := range this.contentPaths {
 			// 随机等待时间
@@ -55,7 +57,7 @@ func (this *ParserJokeList) Do(sPath string) error {
 	} else {
 		fmt.Println(err.Error())
 	}
-	fmt.Println("完成!")
+	// fmt.Println("完成!")
 	return err
 }
 

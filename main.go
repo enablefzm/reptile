@@ -13,7 +13,7 @@ func main() {
 	tk := time.NewTicker(10 * time.Minute)
 	doPullJokeList()
 	for {
-		fmt.Println("waiting 10m ...")
+		fmt.Println(vatools.GetNowTimeString(), " waiting 10m ...")
 		<-tk.C
 		doPullJokeList()
 	}

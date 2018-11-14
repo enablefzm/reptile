@@ -75,11 +75,23 @@ func (this *Joke) Do(sPathID string) {
 	if len(arr) == 3 {
 		this.db.ID = vatools.SInt(arr[2])
 	}
+	// 判断当前库里是否有这个信息存在有则退出
+	res, err := CheckJoke(this.db.ID)
+	if err != nil {
+		obLog.errs++
+		fmt.Print("×")
+		return
+	}
+	if res != IS_NULL {
+		obLog.repeat++
+		fmt.Print("-")
+		return
+	}
 	// 生成网址
 	sPath := fmt.Sprint(DOMAIN_PATH, sPathID)
 	if err := this.c.Visit(sPath); err != nil {
 		obLog.errs++
-		fmt.Print("×")
+		fmt.Print("≠")
 		return
 	}
 
@@ -89,6 +101,7 @@ func (this *Joke) Do(sPathID string) {
 
 func (this *Joke) onRequest(r *colly.Request) {
 	// fmt.Println("内容获取网址：", r.URL.String())
+	SetRequestHeaders(r)
 }
 
 func (this *Joke) parserKeywords(e *colly.HTMLElement) {

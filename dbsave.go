@@ -10,6 +10,7 @@ const (
 	IS_OK        int8 = 0
 	IS_EXISTENCE int8 = 1
 	IS_ERROR     int8 = 2
+	IS_NULL      int8 = 3
 )
 
 var DBSave *mysql.DBs
@@ -31,7 +32,7 @@ func LinkDBServer() error {
 	cfg.User = "joke"
 	cfg.Pass = "jokeUser&2018"
 
-	fmt.Println("【正在连接数据库...】")
+	fmt.Print("【正在连接数据库...")
 	DBSave, err = mysql.NewDBs(
 		cfg.DBName,
 		cfg.Address,
@@ -42,22 +43,15 @@ func LinkDBServer() error {
 		cfg.MinConn,
 	)
 	if err != nil {
-		fmt.Println("【连接数据库失败-", err.Error(), "】")
+		fmt.Print("连接数据库失败-", err.Error())
 	} else {
-		fmt.Println("【连接数据库成功】")
+		fmt.Print("连接数据库成功")
 	}
+	fmt.Println("】")
 	return err
 }
 
 func SaveJoke(db *JokeDB) (int8, error) {
-	// 判断是否有这个笑话存在
-	if rss, err := DBSave.Querys("id", "joke_text", fmt.Sprint("id=", db.ID)); err != nil {
-		return IS_ERROR, err
-	} else {
-		if len(rss) > 0 {
-			return IS_EXISTENCE, nil
-		}
-	}
 	_, err := DBSave.Insert("joke_text", map[string]interface{}{
 		"id":       db.ID,
 		"content":  db.Content,
@@ -69,4 +63,16 @@ func SaveJoke(db *JokeDB) (int8, error) {
 		return IS_ERROR, err
 	}
 	return IS_OK, nil
+}
+
+func CheckJoke(id int) (int8, error) {
+	// 判断是否有这个笑话存在
+	if rss, err := DBSave.Querys("id", "joke_text", fmt.Sprint("id=", id)); err != nil {
+		return IS_ERROR, err
+	} else {
+		if len(rss) > 0 {
+			return IS_EXISTENCE, nil
+		}
+	}
+	return IS_NULL, nil
 }

@@ -41,6 +41,7 @@ func (this *ParserJokeList) ParserOnRequest(r *colly.Request) {
 	// fmt.Print(r.URL.String())
 	// fmt.Print("○")
 	fmt.Print("|")
+	SetRequestHeaders(r)
 }
 
 func (this *ParserJokeList) Do(sPath string) error {

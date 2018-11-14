@@ -10,6 +10,17 @@ import (
 )
 
 func main() {
+	// 执行爬取糗事百科的断子
+	doPullJokeList()
+
+	// 执行获取笑话断子
+	// doPullJokes8List()
+
+	fmt.Scanln()
+}
+
+// 拉取糗事百科的断子
+func doPullJokeList() error {
 	tk := time.NewTicker(10 * time.Minute)
 	doPullJokeList()
 	for {
@@ -17,10 +28,9 @@ func main() {
 		<-tk.C
 		doPullJokeList()
 	}
-	fmt.Scanln()
 }
 
-func doPullJokeList() error {
+func _doPullJokeList() error {
 	jokeList := NewParserJokeList()
 	for i := 1; i <= 13; i++ {
 		RandSleep()
@@ -28,6 +38,21 @@ func doPullJokeList() error {
 	}
 	fmt.Println("\nComplete")
 	obLog.Println()
+	return nil
+}
+
+// 拉取笑话断子的数据
+func doPullJokes8List() error {
+	// 构造对象
+	c := NewJokes8List()
+
+	for i := 1; i <= 1; i++ {
+		RandSleep()
+		obLog.countVisit++
+		c.Do(fmt.Sprintf("%s%d", DOMAIN_JOKES8_PATH, i))
+		fmt.Println("")
+		obLog.Println()
+	}
 	return nil
 }
 
@@ -47,18 +72,41 @@ func NewCollector() *colly.Collector {
 	return c
 }
 
-// 设定Request的Headers
-func SetRequestHeaders(r *colly.Request) {
+func SetRequestHeadersBase(r *colly.Request) {
 	r.Headers.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
 	r.Headers.Add("Accept-Encoding", "gzip, deflate, br")
 	r.Headers.Add("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7")
 	r.Headers.Add("Connection", "keep-alive")
 	r.Headers.Add("Cookie", "ga=GA1.2.1126375876.1541781037; __cur_art_index=2400; Hm_lvt_18a964a3eb14176db6e70f1dd0a3e557=1541815767,1542033687; Hm_lvt_2670efbdd59c7e3ed3749b458cafaa37=1541815639,1541836747,1541906357,1542121813; _gid=GA1.2.835845646.1542121813; _xsrf=2|f5374f7b|5ce53c48554ddbb738e6829355a2dd09|1542124213")
-	r.Headers.Add("Host", "www.qiushibaike.com")
 	r.Headers.Add("Upgrade-Insecure-Requests", "1")
 }
 
+// 设定糗事百科的Request的Headers
+func SetRequestHeaders(r *colly.Request) {
+	SetRequestHeadersBase(r)
+	r.Headers.Add("Host", "www.qiushibaike.com")
+}
+
 func RandSleep() {
-	rndTime := vatools.CRnd(100, 200)
+	rndTime := vatools.CRnd(1000, 2000)
 	time.Sleep(time.Duration(rndTime) * time.Millisecond)
+}
+
+func SaveDb(tableName string, db *JokeDB) error {
+	state, err := SaveJoke(tableName, db)
+	switch state {
+	case IS_OK:
+		// fmt.Println(this.ID, "保存成功")
+		obLog.success++
+		fmt.Print("+")
+	case IS_ERROR:
+		// fmt.Println(this.ID, "保存错误：", err.Error())
+		obLog.errs++
+		fmt.Print("×")
+	case IS_EXISTENCE:
+		// fmt.Println(this.ID, "已存在无法再次保存")
+		obLog.repeat++
+		fmt.Print("-")
+	}
+	return err
 }

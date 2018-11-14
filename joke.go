@@ -26,23 +26,8 @@ func (this *JokeDB) Clear() {
 	this.Content = ""
 }
 
-func (this *JokeDB) Save() error {
-	state, err := SaveJoke(this)
-	switch state {
-	case IS_OK:
-		// fmt.Println(this.ID, "保存成功")
-		obLog.success++
-		fmt.Print("+")
-	case IS_ERROR:
-		// fmt.Println(this.ID, "保存错误：", err.Error())
-		obLog.errs++
-		fmt.Print("×")
-	case IS_EXISTENCE:
-		// fmt.Println(this.ID, "已存在无法再次保存")
-		obLog.repeat++
-		fmt.Print("-")
-	}
-	return err
+func (this *JokeDB) Save(tableName string) error {
+	return SaveDb(tableName, this)
 }
 
 func NewJoke() *Joke {
@@ -76,7 +61,7 @@ func (this *Joke) Do(sPathID string) {
 		this.db.ID = vatools.SInt(arr[2])
 	}
 	// 判断当前库里是否有这个信息存在有则退出
-	res, err := CheckJoke(this.db.ID)
+	res, err := CheckJoke("joke_text", this.db.ID)
 	if err != nil {
 		obLog.errs++
 		fmt.Print("×")
@@ -96,7 +81,7 @@ func (this *Joke) Do(sPathID string) {
 	}
 
 	// 完成进行保存
-	this.db.Save()
+	this.db.Save("joke_text")
 }
 
 func (this *Joke) onRequest(r *colly.Request) {

@@ -51,8 +51,8 @@ func LinkDBServer() error {
 	return err
 }
 
-func SaveJoke(db *JokeDB) (int8, error) {
-	_, err := DBSave.Insert("joke_text", map[string]interface{}{
+func SaveJoke(tableName string, db *JokeDB) (int8, error) {
+	_, err := DBSave.Insert(tableName, map[string]interface{}{
 		"id":       db.ID,
 		"content":  db.Content,
 		"keywords": db.Keywords,
@@ -65,9 +65,9 @@ func SaveJoke(db *JokeDB) (int8, error) {
 	return IS_OK, nil
 }
 
-func CheckJoke(id int) (int8, error) {
+func CheckJoke(tableName string, id int) (int8, error) {
 	// 判断是否有这个笑话存在
-	if rss, err := DBSave.Querys("id", "joke_text", fmt.Sprint("id=", id)); err != nil {
+	if rss, err := DBSave.Querys("id", tableName, fmt.Sprint("id=", id)); err != nil {
 		return IS_ERROR, err
 	} else {
 		if len(rss) > 0 {
